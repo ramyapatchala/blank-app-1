@@ -58,8 +58,7 @@ if user_input:
     st.write(embedding)
         # Query the collection for similar documents
     results = collection.query(
-            query_embeddings=[embedding],
-            where_document={"$contains":user_input},
+            query_text=[user_input],
             n_results=3
         )
         # Display the results
