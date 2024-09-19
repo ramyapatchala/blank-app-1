@@ -11,14 +11,12 @@ import chromadb
 
 if 'openai_client' not in st.session_state:
     api_key = st.secrets['key1']
-    st.session_state.openai_client = OpenAI(api_key = api_key)
+    st.session_state.openai_client = OpenAI(api_key=api_key)
 
 def coll_function():
     client = chromadb.PersistentClient()
-    #client.delete_collection("L4_Collection")
-    st.write(client.list_collections())
-    collection = client.get_or_create_collection("L4_Collection", metadata={"hnsw:space": "ip", "hnsw:M": 32})
-    st.write(client.list_collections())
+    collection = client.get_or_create_collection("L4_Collection", metadata={"hnsw:space": "cosine", "hnsw:M": 32})
+    
     datafiles_path = os.path.join(os.getcwd(), "datafiles")
     pdf_files = [f for f in os.listdir(datafiles_path) if f.endswith('.pdf')]
         
@@ -29,16 +27,26 @@ def coll_function():
             text = ""
             for page in pdf_reader.pages:
                 text += page.extract_text()
+                
+            st.write(f"Extracted text from {pdf_file}: {text[:200]}")  # Log extracted text
             openai_client = st.session_state.openai_client
-            response = openai_client.embeddings.create(
-                        input=text,
-                        model="text-embedding-3-small")
-            embedding = response.data[0].embedding
+            
+            try:
+                response = openai_client.embeddings.create(
+                    input=text,
+                    model="text-embedding-3-small"
+                )
+                embedding = response.data[0].embedding
+            except Exception as e:
+                st.error(f"Error generating embedding for {pdf_file}: {e}")
+                continue
+            
             collection.add(
                 documents=[text],
                 ids=[pdf_file],
                 embeddings=[embedding]
             )
+    
     st.session_state.l4_collection = collection
 
 if st.button("Setup VectorDB"):
@@ -49,26 +57,28 @@ if user_input:
     openai_client = st.session_state.openai_client
     collection = st.session_state.l4_collection
     
-    # Generate embedding for the user input
-    response = openai_client.embeddings.create(
-        input=user_input,
-        model="text-embedding-3-small"
-    )
-    embedding = response.data[0].embedding
+    try:
+        response = openai_client.embeddings.create(
+            input=user_input,
+            model="text-embedding-3-small"
+        )
+        embedding = response.data[0].embedding
+        
+        # Query the collection for similar documents
+        results = collection.query(
+            query_embeddings=[embedding],
+            n_results=3,
+            include=['distances']
+        )
+        
+        # Combine results and sort them by distances
+        combined_results = list(zip(results['ids'], results['distances']))
+        combined_results.sort(key=lambda x: x[1])  # Sort by distance
+        
+        # Display the sorted results
+        for doc_id, distance in combined_results:
+            st.write(f"The following file/syllabus might be helpful: {doc_id}")
+            st.write(f"The distance: {distance}")
     
-    # Query the collection for similar documents
-    results = collection.query(
-        query_embeddings=[embedding],
-        n_results=3,
-        include=['distances']
-    )
-    
-    # Combine results and sort them by distances
-    combined_results = list(zip(results['ids'], results['distances']))
-    combined_results.sort(key=lambda x: x[1])  # Sort by distance
-    
-    # Display the sorted results
-    for doc_id, distance in combined_results:
-        st.write(f"The following file/syllabus might be helpful: {doc_id}")
-        st.write(f"The distance: {distance}")
-
+    except Exception as e:
+        st.error(f"Error generating embedding for user input: {e}")
