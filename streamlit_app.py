@@ -37,14 +37,23 @@ def coll_function():
                 embeddings=[embedding]
             )
     user_input = st.text_input("Enter some text:")
-    embedding = openai_client.embeddings.create(
-                        input=user_input,
-                        model="text-embedding-3-small")
-    results = collection.query(query_embeddings = embedding,
-                            n_results= 3)
-    for i in range(len(results['ids'][0])):
-        doc_id = results['ids'][0][i]
-        st.write(f"The following file/syllabus might be helpful: {doc_id}")
+    if user_input:
+        # Generate embedding for user input
+        response = openai_client.Embedding.create(
+            input=user_input,
+            model="text-embedding-3-small"  # Use the correct model name
+        )
+        embedding = response['data'][0]['embedding']
+        # Query the collection for similar documents
+        results = collection.query(
+            query_embeddings=[embedding],
+            n_results=3
+        )
+
+        # Display the results
+        for i in range(len(results['ids'])):
+            doc_id = results['ids'][i]
+            st.write(f"The following file/syllabus might be helpful: {doc_id}")
 
 coll_function()
 
