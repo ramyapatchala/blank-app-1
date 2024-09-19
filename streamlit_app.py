@@ -48,17 +48,14 @@ user_input = st.text_input("Enter some text:")
 if user_input:
     openai_client = st.session_state.openai_client
     collection = st.session_state.l4_collection
-
-    st.write(collection)
     response = openai_client.embeddings.create(
         input=user_input,
         model="text-embedding-3-small"  # Use the correct model name
         )
     embedding = response.data[0].embedding
-    st.write(embedding)
         # Query the collection for similar documents
     results = collection.query(
-            query_texts=[user_input],
+            query_embeddings=[embedding],
             n_results=3
         )
         # Display the results
