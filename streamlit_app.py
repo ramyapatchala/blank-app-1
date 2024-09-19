@@ -36,26 +36,25 @@ def coll_function():
                 ids=[pdf_file],
                 embeddings=[embedding]
             )
-    user_input = st.text_input("Enter some text:")
-    if user_input:
+coll_function()
+user_input = st.text_input("Enter some text:")
+if user_input:
         # Generate embedding for user input
-        response = openai_client.embeddings.create(
-            input=user_input,
-            model="text-embedding-3-small"  # Use the correct model name
+    response = openai_client.embeddings.create(
+        input=user_input,
+        model="text-embedding-3-small"  # Use the correct model name
         )
-        embedding = response.data[0].embedding
+    embedding = response.data[0].embedding
         # Query the collection for similar documents
-        results = collection.query(
+    results = collection.query(
             query_embeddings=[embedding],
             n_results=3
         )
 
         # Display the results
-        for i in range(len(results['ids'])):
-            doc_id = results['ids'][i]
-            st.write(f"The following file/syllabus might be helpful: {doc_id}")
-
-coll_function()
+    for i in range(len(results['ids'])):
+        doc_id = results['ids'][i]
+        st.write(f"The following file/syllabus might be helpful: {doc_id}")
 
     
     
