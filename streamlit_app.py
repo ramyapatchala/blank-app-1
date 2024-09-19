@@ -48,25 +48,27 @@ user_input = st.text_input("Enter some text:")
 if user_input:
     openai_client = st.session_state.openai_client
     collection = st.session_state.l4_collection
+    
+    # Generate embedding for the user input
     response = openai_client.embeddings.create(
         input=user_input,
-        model="text-embedding-3-small"  # Use the correct model name
-        )
+        model="text-embedding-3-small"
+    )
     embedding = response.data[0].embedding
-        # Query the collection for similar documents
+    
+    # Query the collection for similar documents
     results = collection.query(
-            query_embeddings=[embedding],
-            n_results=3,
-            include = ['distances']
-        )
-        # Display the results
-    for i in range(len(results['ids'])):
-        doc_id = results['ids'][i]
-        dis_id = results['distances'][i]
+        query_embeddings=[embedding],
+        n_results=3,
+        include=['distances']
+    )
+    
+    # Combine results and sort them by distances
+    combined_results = list(zip(results['ids'], results['distances']))
+    combined_results.sort(key=lambda x: x[1])  # Sort by distance
+    
+    # Display the sorted results
+    for doc_id, distance in combined_results:
         st.write(f"The following file/syllabus might be helpful: {doc_id}")
-        st.write(f"The distance: {dis_id}")
+        st.write(f"The distance: {distance}")
 
-    
-    
-
-    
