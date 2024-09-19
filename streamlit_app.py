@@ -38,7 +38,8 @@ def coll_function():
             )
     st.session_state.l4_collection = collection
 
-coll_function()
+if st.button("Setup VectorDB"):
+    coll_function()
 
 user_input = st.text_input("Enter some text:")
 if user_input:
