@@ -15,7 +15,8 @@ if 'openai_client' not in st.session_state:
 
 def coll_function():
     client = chromadb.PersistentClient()
-    collection = client.get_or_create_collection("L4_Collection")
+    client.delete_collection("L4_Collection")
+    collection = client.get_or_create_collection("L4_Collection", metadata={"hnsw:space": "cosine", "hnsw:M": 32})
     datafiles_path = os.path.join(os.getcwd(), "datafiles")
     pdf_files = [f for f in os.listdir(datafiles_path) if f.endswith('.pdf')]
         
