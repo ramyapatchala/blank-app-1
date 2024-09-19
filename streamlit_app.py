@@ -36,10 +36,14 @@ def coll_function():
                 ids=[pdf_file],
                 embeddings=[embedding]
             )
+    st.session_state.l4_collection = collection
+
 coll_function()
+
 user_input = st.text_input("Enter some text:")
 if user_input:
-        # Generate embedding for user input
+    openai_client = st.session_state.openai_client
+    collection = st.session_state.l4_collection
     response = openai_client.embeddings.create(
         input=user_input,
         model="text-embedding-3-small"  # Use the correct model name
@@ -50,7 +54,6 @@ if user_input:
             query_embeddings=[embedding],
             n_results=3
         )
-
         # Display the results
     for i in range(len(results['ids'])):
         doc_id = results['ids'][i]
