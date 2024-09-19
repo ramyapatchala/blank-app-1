@@ -58,7 +58,7 @@ if user_input:
     st.write(embedding)
         # Query the collection for similar documents
     results = collection.query(
-            query_text=[user_input],
+            query_texts=[user_input],
             n_results=3
         )
         # Display the results
