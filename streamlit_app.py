@@ -48,6 +48,8 @@ user_input = st.text_input("Enter some text:")
 if user_input:
     openai_client = st.session_state.openai_client
     collection = st.session_state.l4_collection
+
+    st.write(collection)
     response = openai_client.embeddings.create(
         input=user_input,
         model="text-embedding-3-small"  # Use the correct model name
