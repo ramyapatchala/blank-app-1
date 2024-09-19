@@ -15,7 +15,7 @@ if 'openai_client' not in st.session_state:
 
 def coll_function():
     client = chromadb.PersistentClient()
-    client.delete_collection("L4_Collection")
+    #client.delete_collection("L4_Collection")
     st.write(client.list_collections())
     collection = client.get_or_create_collection("L4_Collection", metadata={"hnsw:space": "ip", "hnsw:M": 32})
     st.write(client.list_collections())
