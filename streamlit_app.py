@@ -43,7 +43,7 @@ def coll_function():
             input=user_input,
             model="text-embedding-3-small"  # Use the correct model name
         )
-        embedding = response['data'][0]['embedding']
+        embedding = response.data[0].embedding
         # Query the collection for similar documents
         results = collection.query(
             query_embeddings=[embedding],
