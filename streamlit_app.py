@@ -53,6 +53,7 @@ if user_input:
         model="text-embedding-3-small"  # Use the correct model name
         )
     embedding = response.data[0].embedding
+    st.write(embedding)
         # Query the collection for similar documents
     results = collection.query(
             query_embeddings=[embedding],
