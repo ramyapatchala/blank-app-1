@@ -33,7 +33,7 @@ def coll_function():
             embedding = response.data[0].embedding
             collection.add(
                 documents=[text],
-                ids=[pdffile],
+                ids=[pdf_file],
                 embeddings=[embedding]
             )
     user_input = st.text_input("Enter some text:")
