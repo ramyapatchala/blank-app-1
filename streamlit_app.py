@@ -56,12 +56,15 @@ if user_input:
         # Query the collection for similar documents
     results = collection.query(
             query_embeddings=[embedding],
-            n_results=3
+            n_results=3,
+            include = ['distances']
         )
         # Display the results
     for i in range(len(results['ids'])):
         doc_id = results['ids'][i]
+        dis_id = results['distances'][i]
         st.write(f"The following file/syllabus might be helpful: {doc_id}")
+        st.write(f"The distance: {dis_id}")
 
     
     
