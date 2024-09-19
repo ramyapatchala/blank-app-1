@@ -40,7 +40,7 @@ def coll_function():
     embedding = openai_client.embeddings.create(
                         input=user_input,
                         model="text-embedding-3-small")
-    results = client.query(query_embeddings = embedding,
+    results = collection.query(query_embeddings = embedding,
                             n_results= 3)
     for i in range(len(results['ids'][0])):
         doc_id = results['ids'][0][i]
