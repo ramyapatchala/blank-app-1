@@ -39,7 +39,7 @@ def coll_function():
     user_input = st.text_input("Enter some text:")
     if user_input:
         # Generate embedding for user input
-        response = openai_client.Embedding.create(
+        response = openai_client.embeddings.create(
             input=user_input,
             model="text-embedding-3-small"  # Use the correct model name
         )
